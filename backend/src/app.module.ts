@@ -1,9 +1,33 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SystemModulesModule } from './@features/system-modules/system-modules.module.js';
+import { PermissionsModule } from './@features/permissions/permissions.module.js';
+import { ActionsModule } from './@features/actions/actions.module.js';
+import { RolesModule } from './@features/roles/roles.module.js';
+import { RolePermissionModule } from './@features/role-permission/role-permission.module.js';
+import { UsersModule } from './@features/users/users.module.js';
+import { UserRoleModule } from './@features/user-role/user-role.module.js';
+import { UserPermissionModule } from './@features/user-permission/user-permission.module.js';
 
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'better-sqlite3',
+      database: 'database.sqlite',
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+    SystemModulesModule,
+    PermissionsModule,
+    ActionsModule,
+    RolesModule,
+    RolePermissionModule,
+    UsersModule,
+    UserRoleModule,
+    UserPermissionModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

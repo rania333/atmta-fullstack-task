@@ -1,0 +1,31 @@
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
+import { Role } from '../../roles/entities/roles.entity.js';
+import { Permission } from '../../permissions/entities/permission.entity.js';
+import { User } from '../../users/entities/user.entity.js';
+
+@Entity('user_roles')
+@Unique(['user', 'role'])
+export class UserRole {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ManyToOne(() => Role, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
+
+  @ManyToOne(
+    () => User,
+    (u) => u.userRoles,
+    { onDelete: 'CASCADE' },
+  )
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+}
