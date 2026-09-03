@@ -3,6 +3,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  type Relation,
 } from 'typeorm';
 import { Permission } from '../../permissions/entities/permission.entity.js';
 
@@ -12,8 +13,8 @@ export class Action {
   id: number;
 
   @Column({ unique: true })
-  action: string;
+  name: string;
 
   @OneToMany(() => Permission, (p) => p.action)
-  permissions: Permission[];
+  permissions: Relation<Permission[]>;
 }

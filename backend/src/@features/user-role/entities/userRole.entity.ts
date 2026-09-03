@@ -3,6 +3,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  type Relation,
   Unique,
 } from 'typeorm';
 import { Role } from '../../roles/entities/roles.entity.js';
@@ -19,7 +20,7 @@ export class UserRole {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'role_id' })
-  role: Role;
+  role: Relation<Role>;
 
   @ManyToOne(
     () => User,
@@ -27,5 +28,5 @@ export class UserRole {
     { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user: Relation<User>;
 }

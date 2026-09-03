@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  type Relation,
   Unique,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity.js';
@@ -24,14 +25,14 @@ export class UserPermission {
     { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user: Relation<User>;
 
   @ManyToOne(
     () => Permission,
     { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'permission_id' })
-  permission: Permission;
+  permission: Relation<Permission>;
 
   @Column({
     type: 'text',

@@ -3,6 +3,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  type Relation,
 } from 'typeorm';
 import { UserPermission } from '../../user-permission/entities/userPermission.entity.js';
 import { UserRole } from '../../user-role/entities/userRole.entity.js';
@@ -35,11 +36,11 @@ export class User {
     () => UserRole,
     (ur) => ur.role,
   )
-  userRoles: UserRole[];
+  userRoles: Relation<UserRole[]>;
 
   @OneToMany(
     () => UserPermission,
     (up) => up.user,
   )
-  userPermissions: UserPermission[];
+  userPermissions: Relation<UserPermission[]>;
 }

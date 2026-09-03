@@ -3,6 +3,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  type Relation,
 } from 'typeorm';
 import { RolePermission } from '../../role-permission/entities/rolePermission.entity.js';
 
@@ -18,5 +19,5 @@ export class Role {
     () => RolePermission,
     (rp) => rp.role,
   )
-  rolePermissions: RolePermission[]; // Navigation property, not a column, but a relation to RolePermission entity
+  rolePermissions: Relation<RolePermission[]>; // Navigation property, not a column, but a relation to RolePermission entity
 }

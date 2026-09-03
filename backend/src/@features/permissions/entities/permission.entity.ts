@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  type Relation,
   Unique,
 } from 'typeorm';
 import { SystemModule } from '../../system-modules/entities/system-module.entity.js';
@@ -19,11 +20,11 @@ export class Permission { // Module  + Action
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'module_id' })
-  module: SystemModule;
+  module: Relation<SystemModule>;
 
   @ManyToOne(() => Action, (a) => a.permissions, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'action_id' })
-  action: Action;
+  action: Relation<Action>;
 }

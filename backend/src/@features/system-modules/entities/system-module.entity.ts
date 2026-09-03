@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  type Relation,
+} from 'typeorm';
 import { Permission } from "../../permissions/entities/permission.entity.js";
 
 @Entity('modules')
@@ -13,5 +19,5 @@ export class SystemModule {
   displayName: string;
 
   @OneToMany(() => Permission, (p) => p.module)
-  permissions: Permission[];
+  permissions: Relation<Permission[]>;
 }
