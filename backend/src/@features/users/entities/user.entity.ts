@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { UserPermission } from '../../user-permission/entities/userPermission.entity.js';
 import { UserRole } from '../../user-role/entities/userRole.entity.js';
+import { Vendor } from '../../vendors/entities/vendors.entity.js';
 
 
 @Entity('users')
@@ -43,4 +44,10 @@ export class User {
     (up) => up.user,
   )
   userPermissions: Relation<UserPermission[]>;
+
+  @OneToMany(() => Vendor, (v) => v.createdBy)
+  createdVendors: Relation<Vendor[]>;
+
+  @OneToMany(() => Vendor, (v) => v.updatedBy)
+  updatedVendors: Relation<Vendor[]>;
 }

@@ -10,6 +10,8 @@ import { RolePermissionModule } from './@features/role-permission/role-permissio
 import { UsersModule } from './@features/users/users.module.js';
 import { UserRoleModule } from './@features/user-role/user-role.module.js';
 import { UserPermissionModule } from './@features/user-permission/user-permission.module.js';
+import { CategoriesModule } from './@features/categories/categories.module.js';
+import { VendorsModule } from './@features/vendors/vendors.module.js';
 
 @Module({
   imports: [
@@ -26,7 +28,9 @@ import { UserPermissionModule } from './@features/user-permission/user-permissio
     RolePermissionModule,
     UsersModule,
     UserRoleModule,
-    UserPermissionModule
+    UserPermissionModule,
+    CategoriesModule,
+    VendorsModule
   ],
   controllers: [AppController],
   providers: [AppService],
