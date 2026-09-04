@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ICreateVendorReq, IGetVendorReq, IUpdateVendorReq } from './models/vendors.model.js';
 import { RequirePermission } from '../../@core/decorators/require-permission.decorator.js';
 import { JwtGuard } from '../../@core/guards/jwt.guard.js';
 import { PermissionGuard } from '../../@core/guards/permission.guard.js';
 import { VendorsService } from './vendors.service.js';
-import { Action } from '../actions/entities/actions.entity.js';
 import { ACTION } from '../actions/models/actions.model.js';
+import type { Response } from 'express';
 
 @Controller('vendors')
 @UseGuards(JwtGuard, PermissionGuard)
@@ -22,6 +22,24 @@ export class VendorsController {
     @RequirePermission('vendors', ACTION.READ)
     getAll(@Query() query: IGetVendorReq) {
         return this.vendorsService.getAll(query);
+    }
+
+    @Get('export')
+    @RequirePermission('vendors', ACTION.EXPORT)
+    async export(@Query() query: IGetVendorReq, @Res() res: Response ) {
+        const buffer = await this.vendorsService.exportToExcel(query);
+
+        res.setHeader(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+
+        res.setHeader(
+            'Content-Disposition',
+            'attachment; filename="vendors.xlsx"',
+        );
+
+        res.send(buffer);
     }
 
     @Get(':id')

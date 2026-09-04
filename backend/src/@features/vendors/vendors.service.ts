@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity.js';
 import { IBaseRes } from '../../@shared/models/base-api-response.model.js';
-
+import ExcelJS from 'exceljs';
 @Injectable()
 export class VendorsService {
 
@@ -229,9 +229,76 @@ export class VendorsService {
         }
     }
 
+    async exportToExcel(query: IGetVendorReq ): Promise<Buffer> {
+        // 1. Build the query
+        const queryBuilder = this.vendorsRepo
+            .createQueryBuilder('vendor')
+            .leftJoinAndSelect('vendor.category', 'category');
+
+        // 2. Check the search if provided
+        if (query.key) {
+            queryBuilder.andWhere(
+                `(
+                    vendor.nameAr LIKE :search
+                    OR vendor.nameEn LIKE :search
+                    OR vendor.crNumber LIKE :search
+                )`,
+                {
+                    search: `%${query.key}%`,
+                },
+            );
+        }
+
+        // 3. Check category if provided
+        if (query.categoryId) {
+            queryBuilder.andWhere(
+                'category.id = :categoryId',
+                {
+                    categoryId: query.categoryId,
+                },
+            );
+        }
+
+        queryBuilder.orderBy( 'vendor.createdAt', 'DESC' );
+
+        const vendors = await queryBuilder.getMany();
+
+        // 4. Build the sheet
+        const workbook = new ExcelJS.Workbook();
+
+        const worksheet = workbook.addWorksheet('Vendors'); // Name
+
+        // Columns header
+        worksheet.columns = [
+            { header: 'Arabic Name', key: 'nameAr', width: 25 },
+            { header: 'English Name', key: 'nameEn', width: 25 },
+            { header: 'CR Number', key: 'crNumber', width: 15 },
+            { header: 'Mobile', key: 'mobile', width: 18 },
+            { header: 'Category', key: 'category', width: 20 },
+            { header: 'Status', key: 'status', width: 12 }
+        ];
+
+        // Columns data
+        for (const vendor of vendors) {
+            worksheet.addRow({
+                nameAr: vendor.nameAr,
+                nameEn: vendor.nameEn,
+                crNumber: vendor.crNumber,
+                mobile: vendor.mobile,
+                category: vendor.category.nameEn,
+                status: vendor.isActive ? 'Active' : 'Inactive'
+            });
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer(); // Convert to binary
+
+        return Buffer.from(buffer);
+    }
+
   
   
-  private normalizeSaudiMobile( mobile: string): string {
-    if (mobile.startsWith('05')) return `+966${mobile.substring(1)}`
-    return mobile }
+    private normalizeSaudiMobile( mobile: string): string {
+        if (mobile.startsWith('05')) return `+966${mobile.substring(1)}`
+        return mobile 
+    }
 }
