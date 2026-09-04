@@ -24,8 +24,8 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  photo: string;
+  @Column({ type: 'text', nullable: true })
+  photo: string | null;
 
   @Column()
   phone: string;
