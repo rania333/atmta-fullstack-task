@@ -12,6 +12,7 @@ import { UserRoleModule } from './@features/user-role/user-role.module.js';
 import { UserPermissionModule } from './@features/user-permission/user-permission.module.js';
 import { CategoriesModule } from './@features/categories/categories.module.js';
 import { VendorsModule } from './@features/vendors/vendors.module.js';
+import { AuthModule } from './@features/auth/auth.module.js';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { VendorsModule } from './@features/vendors/vendors.module.js';
     UserRoleModule,
     UserPermissionModule,
     CategoriesModule,
-    VendorsModule
+    VendorsModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
