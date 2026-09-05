@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { UsersModule } from '../users/users.module.js';
@@ -8,7 +8,7 @@ import { PermissionGuard } from '../../@core/guards/permission.guard.js';
 
 @Module({
    imports: [
-    UsersModule,
+    forwardRef(() => UsersModule),
     JwtModule.register({
       secret: 'temporary-secret',
       signOptions: { expiresIn: '1h' },
@@ -16,6 +16,6 @@ import { PermissionGuard } from '../../@core/guards/permission.guard.js';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtGuard, PermissionGuard],
-  exports: [JwtModule, UsersModule, JwtGuard, PermissionGuard]
+  exports: [JwtModule, forwardRef(() => UsersModule), JwtGuard, PermissionGuard]
 })
 export class AuthModule {}

@@ -35,7 +35,7 @@ export class User {
 
   @OneToMany(
     () => UserRole,
-    (ur) => ur.role,
+    (ur) => ur.user,
   )
   userRoles: Relation<UserRole[]>;
 

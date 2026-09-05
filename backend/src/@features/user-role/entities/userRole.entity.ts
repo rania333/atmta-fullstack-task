@@ -7,7 +7,6 @@ import {
   Unique,
 } from 'typeorm';
 import { Role } from '../../roles/entities/roles.entity.js';
-import { Permission } from '../../permissions/entities/permission.entity.js';
 import { User } from '../../users/entities/user.entity.js';
 
 @Entity('user_roles')
@@ -16,9 +15,10 @@ export class UserRole {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Role, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(
+    () => Role, (r) => r.userRoles,
+    { onDelete: 'CASCADE' }
+  )
   @JoinColumn({ name: 'role_id' })
   role: Relation<Role>;
 
