@@ -18,6 +18,7 @@ export const auth = {
 
   setToken(token: string) {
     localStorage.setItem(TOKEN_KEY, token);
+    window.dispatchEvent(new Event('auth-change'));
   },
 
   getUser(): IAuthUser | null {
@@ -40,6 +41,7 @@ export const auth = {
   removeAuth() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    window.dispatchEvent(new Event('auth-change'));
   },
 
   isAuthenticated() {

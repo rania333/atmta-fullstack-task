@@ -1,5 +1,4 @@
-import { ApiError } from "../layout/ApiError";
-import { auth } from "./auth";
+import { ApiError } from "./api-error";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

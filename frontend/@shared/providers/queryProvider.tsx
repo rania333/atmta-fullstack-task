@@ -22,6 +22,16 @@ export default function QueryProvider({
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: (failureCount, error) => {
+              if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+                return false;
+              }
+              return failureCount < 3;
+            },
+          },
+        },
         queryCache: new QueryCache({
           onError: (error) => {
             handleGlobalError(error);
@@ -50,13 +60,15 @@ function handleGlobalError(error: Error) {
   }
 
   if (error.status === 401) {
+    if (!auth.getToken()) {
+      if (window.location.pathname === '/login') toast.error(error.message);
+      return;
+    }
     toast.error('انتهت جلسة تسجيل الدخول');
 
     auth.removeAuth();
 
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 500);
+    window.location.replace('/login');
 
     return;
   }

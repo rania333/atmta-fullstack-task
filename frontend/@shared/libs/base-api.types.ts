@@ -1,5 +1,20 @@
 export interface IBaseRes<T = any> {
     statusCode: number;
-    message: string;
+    message: string | string[];
     data: T;
+    meta: IPagination | null
 } 
+
+
+export interface IPagination {
+    page: number,
+    limit: number,
+    total: number,
+    totalPages: number
+}
+
+export interface IBaseReq {
+    page: number,
+    limit: number,
+    key?: string
+}
