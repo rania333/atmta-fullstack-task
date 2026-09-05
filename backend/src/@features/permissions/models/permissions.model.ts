@@ -1,3 +1,5 @@
+import { ACTION } from "../../actions/models/actions.model.js";
+
 export const PERMISSIONS = {
   USERS: {
     CREATE: 'users.create',
@@ -31,3 +33,12 @@ type Values<T> = T extends unknown ? T[keyof T] : never;
 
 export type PermissionKey = Values<PermissionGroup>;
 export type RolePermissions = 'ALL' | PermissionKey[];
+
+
+
+export interface IPermission {
+  id: number,
+  name: string, // Module name
+  displayName: string,
+  permissions: {id: number, action: ACTION} []
+}
