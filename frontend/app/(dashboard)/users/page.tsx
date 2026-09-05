@@ -10,53 +10,9 @@ import { IUser } from '@/@features/users/users.types';
 import { useUsers } from '@/@features/users/useUsers.hook';
 import DataTable, { DataTableColumn } from '@/@shared/components/Table';
 import Pagination from '@/@shared/components/Pagination';
-
-const columns: DataTableColumn<IUser>[] = [
-  {
-    key: 'name',
-    header: 'الاسم',
-    render: (user: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) => (
-      <span className="font-medium text-gray-900">
-        {user.name}
-      </span>
-    ),
-  },
-  {
-    key: 'email',
-    header: 'البريد الإلكتروني',
-    render: (user) => user.email,
-  },
-  {
-    key: 'phone',
-    header: 'الهاتف',
-    render: (user) => user.phone ?? '-',
-  },
-  {
-    key: 'roles',
-    header: 'الأدوار',
-    render: (user) =>
-      user.roles.length
-        ? user.roles
-            .map((role) => role.name)
-            .join('، ')
-        : '-',
-  },
-  {
-    key: 'status',
-    header: 'الحالة',
-    render: (user) => (
-      <span
-        className={`rounded-full px-3 py-1 text-xs font-medium ${
-          user.isActive
-            ? 'bg-green-50 text-green-700'
-            : 'bg-red-50 text-red-700'
-        }`}
-      >
-        {user.isActive ? 'نشط' : 'غير نشط'}
-      </span>
-    ),
-  },
-];
+import { useProfile } from '@/@core/profile/userProfile.hook';
+import { auth } from '@/@shared/libs/auth';
+import { hasPermission } from '@/@shared/libs/permission.helper';
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
@@ -69,6 +25,84 @@ export default function UsersPage() {
 
   const users = data?.data ?? [];
   const meta = data?.meta;
+
+  // Crnt user
+  const currentUser = auth.getUser();
+  const { data: profileResponse } = useProfile(currentUser?.id!);
+  const permissions = profileResponse?.data.effectivePermissions ?? [];
+
+  // Check permissions
+  const canCreate = hasPermission(permissions, 'users.create');
+  const canUpdate = hasPermission(permissions, 'users.update');
+  const canDelete = hasPermission(permissions, 'users.delete');
+
+  // Cols  
+  const columns: DataTableColumn<IUser>[] = [
+    {
+      key: 'name',
+      header: 'الاسم',
+      render: (user: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) => (
+        <span className="font-medium text-gray-900">
+          {user.name}
+        </span>
+      ),
+    },
+    {
+      key: 'email',
+      header: 'البريد الإلكتروني',
+      render: (user) => user.email,
+    },
+    {
+      key: 'phone',
+      header: 'الهاتف',
+      render: (user) => user.phone ?? '-',
+    },
+    {
+      key: 'roles',
+      header: 'الأدوار',
+      render: (user) =>
+        user.roles.length
+          ? user.roles
+              .map((role) => role.name)
+              .join('، ')
+          : '-',
+    },
+    {
+      key: 'status',
+      header: 'الحالة',
+      render: (user) => (
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-medium ${
+            user.isActive
+              ? 'bg-green-50 text-green-700'
+              : 'bg-red-50 text-red-700'
+          }`}
+        >
+          {user.isActive ? 'نشط' : 'غير نشط'}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'الإجراءات',
+      render: (_) => (
+        <div className="flex items-center gap-2">
+          {canUpdate && (
+            <Button size="sm" variant="soft" color="blue">
+               تعديل
+            </Button>
+          )}
+
+          {canDelete && (
+            <Button size="sm" variant="soft" color="red">
+              تعطيل
+            </Button>
+          )}
+        </div>
+      ),
+    }
+  ];
+
 
   return (
     <div>
@@ -83,9 +117,11 @@ export default function UsersPage() {
           </p>
         </div>
 
-        <Button>
-          إضافة مستخدم
-        </Button>
+        {canCreate && (
+          <Button>
+            إضافة مستخدم
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white">
