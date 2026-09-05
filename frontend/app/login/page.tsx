@@ -3,12 +3,22 @@
 import { authService } from '@/@core/auth/auth.service';
 import Button from '@/@shared/components/Button';
 import Input from '@/@shared/components/Input';
+import { auth } from '@/@shared/libs/auth';
+import AuthGuard from '@/@shared/layout/AuthGuard';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState } from "react";
 
 export default function LoginPage() {
-  // Collect data
+  return (
+    <AuthGuard guestOnly>
+      <LoginForm />
+    </AuthGuard>
+  );
+}
+
+function LoginForm() {
+    // Collect data
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -20,8 +30,8 @@ export default function LoginPage() {
     mutationFn: authService.login,
 
     onSuccess: (res) => {
-      localStorage.setItem('token', res.accessToken);
-      router.push('/users');
+      auth.setToken(res.accessToken);
+      router.replace('/users');
     },
   });
 

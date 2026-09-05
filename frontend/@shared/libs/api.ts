@@ -1,3 +1,6 @@
+import { ApiError } from "../layout/ApiError";
+import { auth } from "./auth";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -15,11 +18,17 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
             ...options.headers
         }
     });
-    if (!res.ok) { // Err
+    if (!res.ok) {
+        let message = 'حدث خطأ ما';
+        try {
         const error = await res.json();
-        throw new Error(Array.isArray(error.message) ?  // As nest send errs in arr
-            error.message.join(', ') : 
-            error.message || 'Something went wrong');
+        message = Array.isArray(error.message)
+            ? error.message.join(', ')
+            : error.message || message;
+        } catch {
+        }
+
+        throw new ApiError( message, res.status);
     }
     
     return res.json() as Promise<T>;
