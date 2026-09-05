@@ -31,6 +31,7 @@ function LoginForm() {
 
     onSuccess: (res) => {
       auth.setToken(res.accessToken);
+      auth.setUser(res.user);
       router.replace('/users');
     },
   });

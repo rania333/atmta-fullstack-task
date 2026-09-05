@@ -52,7 +52,7 @@ function handleGlobalError(error: Error) {
   if (error.status === 401) {
     toast.error('انتهت جلسة تسجيل الدخول');
 
-    auth.removeToken();
+    auth.removeAuth();
 
     setTimeout(() => {
       window.location.href = '/login';
