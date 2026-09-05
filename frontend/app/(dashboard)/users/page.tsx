@@ -1,19 +1,72 @@
 'use client';
 
-import { useState } from 'react';
-import Input from '@/@shared/components/Input';
+import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState } from 'react';
+
 import Button from '@/@shared/components/Button';
-import { useUsers } from '@/@features/users/useUsers.hook';
+import Input from '@/@shared/components/Input';
+
 import { useDebounce } from '@/@shared/hooks/useDebounce';
+import { IUser } from '@/@features/users/users.types';
+import { useUsers } from '@/@features/users/useUsers.hook';
+import DataTable, { DataTableColumn } from '@/@shared/components/Table';
+import Pagination from '@/@shared/components/Pagination';
+
+const columns: DataTableColumn<IUser>[] = [
+  {
+    key: 'name',
+    header: 'الاسم',
+    render: (user: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) => (
+      <span className="font-medium text-gray-900">
+        {user.name}
+      </span>
+    ),
+  },
+  {
+    key: 'email',
+    header: 'البريد الإلكتروني',
+    render: (user) => user.email,
+  },
+  {
+    key: 'phone',
+    header: 'الهاتف',
+    render: (user) => user.phone ?? '-',
+  },
+  {
+    key: 'roles',
+    header: 'الأدوار',
+    render: (user) =>
+      user.roles.length
+        ? user.roles
+            .map((role) => role.name)
+            .join('، ')
+        : '-',
+  },
+  {
+    key: 'status',
+    header: 'الحالة',
+    render: (user) => (
+      <span
+        className={`rounded-full px-3 py-1 text-xs font-medium ${
+          user.isActive
+            ? 'bg-green-50 text-green-700'
+            : 'bg-red-50 text-red-700'
+        }`}
+      >
+        {user.isActive ? 'نشط' : 'غير نشط'}
+      </span>
+    ),
+  },
+];
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
+
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading } = useUsers({ page, limit, key: debouncedSearch });
-  
+  const { data, isLoading } = useUsers({ page, limit, key: debouncedSearch});
+
   const users = data?.data ?? [];
   const meta = data?.meta;
 
@@ -48,113 +101,26 @@ export default function UsersPage() {
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="p-8 text-center text-gray-500">
-            جاري تحميل المستخدمين...
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full text-right">
-                <thead className="border-b border-gray-200 bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-sm font-medium text-gray-600">
-                      الاسم
-                    </th>
+        <DataTable
+          data={users}
+          columns={columns}
+          getRowKey={(user) => user.id}
+          isLoading={isLoading}
+          emptyMessage="لا يوجد مستخدمون"
+        />
 
-                    <th className="px-4 py-3 text-sm font-medium text-gray-600">
-                      البريد الإلكتروني
-                    </th>
-
-                    <th className="px-4 py-3 text-sm font-medium text-gray-600">
-                      الهاتف
-                    </th>
-
-                    <th className="px-4 py-3 text-sm font-medium text-gray-600">
-                      الأدوار
-                    </th>
-
-                    <th className="px-4 py-3 text-sm font-medium text-gray-600">
-                      الحالة
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {users.map((user) => (
-                    <tr
-                      key={user.id}
-                      className="border-b border-gray-100"
-                    >
-                      <td className="px-4 py-4 text-sm text-gray-900">
-                        {user.name}
-                      </td>
-
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {user.email}
-                      </td>
-
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {user.phone ?? '-'}
-                      </td>
-
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {user.roles
-                          .map((role) => role.name)
-                          .join('، ')}
-                      </td>
-
-                      <td className="px-4 py-4">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-medium ${
-                            user.isActive
-                              ? 'bg-green-50 text-green-700'
-                              : 'bg-red-50 text-red-700'
-                          }`}
-                        >
-                          {user.isActive ? 'نشط' : 'غير نشط'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {users.length === 0 && (
-              <div className="p-8 text-center text-sm text-gray-500">
-                لا يوجد مستخدمون
-              </div>
-            )}
-
-            {meta && (
-              <div className="flex items-center justify-between border-t border-gray-200 p-4">
-                <p className="text-sm text-gray-500">
-                  إجمالي المستخدمين: {meta.total}
-                </p>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    disabled={page <= 1}
-                    onClick={() => setPage((current) => current - 1)}
-                  >
-                    السابق
-                  </Button>
-
-                  <span className="px-2 text-sm text-gray-600">
-                    {meta.page} من {meta.totalPages}
-                  </span>
-
-                  <Button
-                    disabled={page >= meta.totalPages}
-                    onClick={() => setPage((current) => current + 1)}
-                  >
-                    التالي
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
+        {meta && (
+          <Pagination
+            page={meta.page}
+            totalPages={meta.totalPages}
+            total={meta.total}
+            onPrevious={() =>
+              setPage((current) => current - 1)
+            }
+            onNext={() =>
+              setPage((current) => current + 1)
+            }
+          />
         )}
       </div>
     </div>
