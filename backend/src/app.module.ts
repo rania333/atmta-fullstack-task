@@ -13,6 +13,7 @@ import { UserPermissionModule } from './@features/user-permission/user-permissio
 import { CategoriesModule } from './@features/categories/categories.module.js';
 import { VendorsModule } from './@features/vendors/vendors.module.js';
 import { AuthModule } from './@features/auth/auth.module.js';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthModule } from './@features/auth/auth.module.js';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    ConfigModule.forRoot({ isGlobal: true }),
     SystemModulesModule,
     PermissionsModule,
     ActionsModule,

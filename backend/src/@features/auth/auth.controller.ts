@@ -15,6 +15,16 @@ export class AuthController {
         return this.authService.login(data);
     }
 
+    @Post('logout')
+    @UseGuards(JwtGuard)
+    logout() {
+        return {
+            statusCode: 200,
+            message: 'Logged out successfully',
+            data: null,
+        };
+    }
+
     // TODO: For testing
     @Get('my-permissions')
     @UseGuards(JwtGuard)
