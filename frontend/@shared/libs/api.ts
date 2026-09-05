@@ -1,6 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    if (!API_URL) {
+        throw new Error('NEXT_PUBLIC_API_URL is not configured');
+    }
     // Check if token exist [server or client]
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     // Send the req
