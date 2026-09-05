@@ -25,4 +25,6 @@ export class Category {
 
     @OneToMany(() => Vendor, (v) => v.category )
     vendors: Relation<Vendor[]> | [];
+
+    childrenCount?: number;
 }

@@ -64,7 +64,7 @@ export class VendorsService {
                 updatedBy: updatedBy?.name ?? null
             },
             statusCode: 201,
-            messgae: 'A Vendor is created successfully'
+            message: 'A Vendor is created successfully'
 
         };
     }
@@ -113,7 +113,7 @@ export class VendorsService {
         // 6. Prepare res
         const res: IBaseRes<IVendor[]> = {
             statusCode: 200,
-            messgae: 'All vendors are retrieved successfully',
+            message: 'All vendors are retrieved successfully',
             data: vendors.map(el => ({
                 ...el,
                 createdBy: el.createdBy.name,
@@ -139,7 +139,7 @@ export class VendorsService {
         return {
             data: { ...vendor, createdBy: vendor?.createdBy?.name, updatedBy: vendor?.updatedBy?.name ?? ''},
             statusCode: 200,
-            messgae: 'A Vendor is retreived successfully'
+            message: 'A Vendor is retreived successfully'
         }
     }
 
@@ -196,7 +196,7 @@ export class VendorsService {
 
         return {
             data: { ...vendor, createdBy: vendor?.createdBy?.name, updatedBy: vendor?.updatedBy?.name ?? '' },
-            messgae: 'A Vendor is updated successfully',
+            message: 'A Vendor is updated successfully',
             statusCode: 200
         }
         
@@ -224,7 +224,7 @@ export class VendorsService {
         await this.vendorsRepo.softRemove(vendor);
         return {
             data: null,
-            messgae: 'A Vendor is deleted successfully',
+            message: 'A Vendor is deleted successfully',
             statusCode: 200
         }
     }

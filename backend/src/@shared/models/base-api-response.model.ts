@@ -1,6 +1,6 @@
 export interface IBaseRes<T = any> {
     data: T,
-    messgae: string[] | string,
+    message: string[] | string,
     statusCode: number,
     meta?: {
         page: number,
