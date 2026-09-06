@@ -24,7 +24,6 @@ export class UsersController {
     }
 
     @Get(':id/profile')
-    @RequirePermission('users', ACTION.READ)
     getProfile(
         @Param('id', ParseIntPipe) id: number,
     ) {
@@ -32,7 +31,6 @@ export class UsersController {
     }
 
     @Get(':id')
-    @RequirePermission('users', ACTION.READ)
     getById(@Param('id', ParseIntPipe) id: number) {
         return this.userService.getById(id);
     }
