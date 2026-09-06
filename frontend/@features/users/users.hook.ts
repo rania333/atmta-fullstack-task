@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usersService } from './users.service';
 import { IBaseReq } from '@/@shared/libs/base-api.types';
-import { IUpdateUserParams, IUpdateUserStatusReq } from './users.types';
+import { IUpdateDirectPermissionsParams, IUpdateUserParams, IUpdateUserStatusReq } from './users.types';
 import { toast } from 'sonner';
 
 export function useUsers(params: IBaseReq) {
@@ -73,6 +73,27 @@ export function useUser(userId?: number) {
     queryKey: ['users', userId],
     queryFn: () => usersService.getUser(userId!),
     enabled: !!userId,
+  });
+}
+
+export function useUpdateDirectPermissions() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, permissions}: IUpdateDirectPermissionsParams) =>
+      usersService.updateDirectPermissions(userId, { permissions }),
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['users', variables.userId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['users'],
+      });
+
+      toast.success('تم تحديث الصلاحيات المباشرة بنجاح');
+    },
   });
 }
 

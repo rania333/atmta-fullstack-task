@@ -1,8 +1,7 @@
 import { apiFetch } from '@/@shared/libs/api';
 import { IBaseReq, IBaseRes } from '@/@shared/libs/base-api.types';
-import { ICreateUserReq, IUpdateUserReq, IUser } from './users.types';
+import { ICreateUserReq, IUpdateDirectPermissionsReq, IUpdateUserReq, IUser, IUserDetails } from './users.types';
 import { buildQueryParams } from '@/@shared/libs/query-params';
-import { IUserDetails } from '../roles/roles.types';
 
 export const usersService = {
   getUsers(params: IBaseReq) {
@@ -32,7 +31,14 @@ export const usersService = {
     });
   },
   updateUser(userId: number, data: IUpdateUserReq) {
-    return apiFetch(`/users/${userId}`, {
+    return apiFetch<IBaseRes<IUserDetails>>(`/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateDirectPermissions( userId: number, data: IUpdateDirectPermissionsReq) {
+    return apiFetch<IBaseRes<IUserDetails>>(`/users/${userId}/permissions`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     });

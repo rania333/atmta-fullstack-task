@@ -1,178 +1,53 @@
 'use client';
 
-import {
-  useEffect,
-  useState,
-} from 'react';
-
-import {
-  useParams,
-  useRouter,
-} from 'next/navigation';
-
-
-import Button from '@/@shared/components/Button';
-import Input from '@/@shared/components/Input';
-import MultiSelect from '@/@shared/components/MultiSelect';
-import { useRoles } from '@/@features/roles/roles.hook';
-import { useUser, useUpdateUser } from '@/@features/users/users.hook';
+import { useParams } from 'next/navigation';
+import { useUser } from '@/@features/users/users.hook';
+import UpdateUserForm from '@/@core/permissions/components/UpdateUserForm';
 
 export default function EditUserPage() {
   const params = useParams();
-  const router = useRouter();
-
   const userId = Number(params.id);
 
-  const { data: userResponse, isLoading } = useUser(userId);
-
-  const { data: rolesResponse } = useRoles();
-
-  const updateUserMutation = useUpdateUser();
-
+  const validUserId = Number.isInteger(userId) && userId > 0;
+  const { data: userResponse, isPending, isError, refetch } = useUser(validUserId ? userId : undefined);
   const user = userResponse?.data;
-  const roles = rolesResponse?.data ?? [];
 
-  const [name, setName] = useState('');
-  const [email, setEmail] =
-    useState('');
-  const [phone, setPhone] =
-    useState('');
-  const [roleIds, setRoleIds] =
-    useState<number[]>([]);
+  if (!validUserId) {
+    return <p role="alert" className="text-red-600">رقم المستخدم غير صحيح.</p>;
+  }
 
-  useEffect(() => {
-    if (!user) return;
+  if (isPending) {
+    return <p role="status" className="text-gray-600">جاري تحميل بيانات المستخدم...</p>;
+  }
 
-    setName(user.name);
-    setEmail(user.email);
-    setPhone(user.phone ?? '');
-
-    setRoleIds(
-      user.roles.map((role) => role.id),
-    );
-  }, [user]);
-
-  const roleOptions = roles.map(
-    (role) => ({
-      value: role.id,
-      label: role.name,
-    }),
-  );
-
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
-
-    updateUserMutation.mutate(
-      {
-        userId,
-        data: {
-          name,
-          email,
-          phone:
-            phone || undefined,
-          roleIds,
-        },
-      },
-      {
-        onSuccess: () => {
-          router.push('/users');
-        },
-      },
-    );
-  };
-
-  if (isLoading) {
+  if (isError) {
     return (
-      <div className="p-8 text-center text-sm text-gray-500">
-        جاري تحميل المستخدم...
+      <div role="alert" className="space-y-3">
+        <p className="text-red-600">تعذّر تحميل بيانات المستخدم.</p>
+        <button type="button" onClick={() => void refetch()} className="text-blue-700 underline">
+          إعادة المحاولة
+        </button>
       </div>
     );
   }
 
+  if (!user) {
+    return <p role="alert" className="text-gray-600">لم يتم العثور على بيانات المستخدم.</p>;
+  }
+
   return (
-    <div>
+     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
           تعديل المستخدم
         </h1>
 
         <p className="mt-1 text-sm text-gray-500">
-          تعديل بيانات المستخدم
-          والأدوار الخاصة به
+          تعديل بيانات المستخدم والأدوار الخاصة به
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-2xl rounded-xl border border-gray-200 bg-white p-6"
-      >
-        <div className="space-y-5">
-          <Input
-            label="الاسم"
-            value={name}
-            onChange={(event) =>
-              setName(
-                event.target.value,
-              )
-            }
-            required
-          />
-
-          <Input
-            label="البريد الإلكتروني"
-            type="email"
-            value={email}
-            onChange={(event) =>
-              setEmail(
-                event.target.value,
-              )
-            }
-            required
-          />
-
-          <Input
-            label="رقم الهاتف"
-            value={phone}
-            onChange={(event) =>
-              setPhone(
-                event.target.value,
-              )
-            }
-          />
-
-          <MultiSelect
-            label="الأدوار"
-            options={roleOptions}
-            value={roleIds}
-            onChange={setRoleIds}
-            placeholder="اختر الأدوار"
-          />
-        </div>
-
-        <div className="mt-8 flex justify-end gap-3">
-          <Button
-            type="button"
-            onClick={() =>
-              router.push('/users')
-            }
-            className="bg-gray-100 text-gray-700 hover:bg-gray-200"
-          >
-            إلغاء
-          </Button>
-
-          <Button
-            type="submit"
-            isLoading={
-              updateUserMutation.isPending
-            }
-            loadingText="جاري الحفظ..."
-          >
-            حفظ التعديلات
-          </Button>
-        </div>
-      </form>
+      <UpdateUserForm key={user.id} user={user} />
     </div>
   );
 }
