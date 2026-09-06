@@ -7,6 +7,10 @@ export const rolesService = {
     return apiFetch<IBaseRes<IRolesRes[]>>('/roles');
   },
 
+  getRole(roleId: number) {
+    return apiFetch<IBaseRes<IRolesRes>>( `/roles/${roleId}` )
+  },
+
   deleteRole(roleId: number) {
     return apiFetch(`/roles/${roleId}`, {
       method: 'DELETE'

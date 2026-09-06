@@ -13,6 +13,16 @@ export function useRoles() {
   });
 }
 
+export function useRole(roleId: number) {
+  return useQuery({
+    queryKey: ['roles', roleId],
+    queryFn: () => rolesService.getRole(roleId),
+
+    enabled: !!roleId,
+    staleTime: 60 * 1000,
+  });
+}
+
 export function useDeleteRole() {
   const queryClient = useQueryClient();
 

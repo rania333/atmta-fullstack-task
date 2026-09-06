@@ -1,7 +1,7 @@
 'use client';
 
 import UpdateRoleForm from '@/@core/permissions/components/Role/UpdateRoleForm';
-import { useRoles } from '@/@features/roles/roles.hook';
+import { useRole } from '@/@features/roles/roles.hook';
 import { useParams } from 'next/navigation';
 
 export default function EditRolePage() {
@@ -9,7 +9,7 @@ export default function EditRolePage() {
 
   const roleId = Number(params.id);
 
-  const { data: rolesResponse, isLoading } = useRoles();
+  const { data: rolesResponse, isLoading } = useRole(roleId);
 
   if (isLoading) {
     return (
@@ -19,9 +19,7 @@ export default function EditRolePage() {
     );
   }
 
-  const role = rolesResponse?.data.find(
-    (role) => role.id === roleId,
-  );
+  const role = rolesResponse?.data
 
   if (!role) {
     return (
