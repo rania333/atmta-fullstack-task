@@ -1,6 +1,6 @@
 'use client';
 
-import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState } from 'react';
+import { useState } from 'react';
 
 import Button from '@/@shared/components/Button';
 import Input from '@/@shared/components/Input';
@@ -31,13 +31,12 @@ export default function UsersPage() {
 
   // Crnt user
   const currentUser = auth.getUser();
-  const { data: profileResponse } = useProfile(currentUser?.id!);
+  const { data: profileResponse } = useProfile(currentUser?.id);
   const permissions = profileResponse?.data.effectivePermissions ?? [];
 
   // Check permissions
   const canCreate = hasPermission(permissions, 'users.create');
   const canUpdate = hasPermission(permissions, 'users.update');
-  const canDelete = hasPermission(permissions, 'users.delete');
 
   // For deactive
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
@@ -49,7 +48,7 @@ export default function UsersPage() {
     {
       key: 'name',
       header: 'الاسم',
-      render: (user: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) => (
+      render: (user) => (
         <span className="font-medium text-gray-900">
           {user.name}
         </span>

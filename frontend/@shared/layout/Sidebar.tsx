@@ -33,7 +33,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const user = auth.getUser();
-  const { data, isLoading } = useProfile(user?.id!);
+  const { data, isLoading } = useProfile(user?.id);
   const profile = data?.data;
 
   const visibleItems = menuItems.filter((item) =>

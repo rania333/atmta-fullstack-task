@@ -1,4 +1,4 @@
-export interface IBaseRes<T = any> {
+export interface IBaseRes<T = unknown> {
     statusCode: number;
     message: string | string[];
     data: T;
@@ -16,5 +16,6 @@ export interface IPagination {
 export interface IBaseReq {
     page: number,
     limit: number,
-    key?: string
+    key?: string,
+    parentCategoryId?: number
 }
