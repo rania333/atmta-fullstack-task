@@ -6,4 +6,10 @@ export const profileService = {
   getProfile(userId: number) {
     return apiFetch<IBaseRes<IProfileRes>>(`/users/${userId}`);
   },
+
+  getProfileDetails(userId: number) {
+    return apiFetch<IBaseRes<IProfileRes>>(
+      `/users/${userId}/profile`,
+    );
+  },
 };

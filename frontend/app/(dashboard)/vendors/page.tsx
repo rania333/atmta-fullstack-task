@@ -7,7 +7,6 @@ import Input from '@/@shared/components/Input';
 import { useDebounce } from '@/@shared/hooks/useDebounce';
 import { useCategories } from '@/@features/categories/categories.hook';
 import { useDeleteVendor, useExportVendors, useVendors } from '@/@features/vendors/vendors.hook';
-import DataTable from '@/@shared/components/Table';
 import { IVendorRes } from '@/@features/vendors/vendors.types';
 import Table from '@/@shared/components/Table';
 import { hasPermission } from '@/@shared/libs/permission.helper';

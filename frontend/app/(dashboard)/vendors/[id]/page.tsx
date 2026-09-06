@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 import Button from '@/@shared/components/Button';
 import { useVendor } from '@/@features/vendors/vendors.hook';
@@ -121,9 +122,12 @@ export default function VendorDetailsPage() {
                 الشعار
               </p>
 
-              <img
+              <Image
                 src={vendor.logo}
                 alt={vendor.nameAr}
+                width={80}
+                height={80}
+                unoptimized
                 className="h-20 w-20 rounded-lg border border-gray-200 object-contain"
               />
             </div>
