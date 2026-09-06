@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { auth } from '@/@shared/libs/auth';
 import { useProfile } from '@/@core/profile/userProfile.hook';
@@ -31,6 +31,12 @@ const menuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    auth.removeAuth();
+    router.replace('/login');
+  };
 
   const user = auth.getUser();
   const { data, isLoading } = useProfile(user?.id);
@@ -93,6 +99,13 @@ export default function Sidebar() {
             >
               الملف الشخصي
             </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="block w-full cursor-pointer rounded-lg px-4 py-3 text-right text-sm font-medium text-red-600 transition hover:bg-red-50"
+            >
+              تسجيل الخروج
+            </button>
           </>
         )}
       </nav>
