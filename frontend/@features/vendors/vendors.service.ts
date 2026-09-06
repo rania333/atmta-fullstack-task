@@ -2,6 +2,7 @@ import { apiFetch } from '@/@shared/libs/api';
 import { IBaseReq, IBaseRes } from '@/@shared/libs/base-api.types';
 import { buildQueryParams } from '@/@shared/libs/query-params';
 import { ICreateVendorReq, IVendorRes } from './vendors.types';
+import { auth } from '@/@shared/libs/auth';
 
 export const vendorsService = {
   getVendors(params: IBaseReq = {} as IBaseReq) {
@@ -34,5 +35,28 @@ export const vendorsService = {
     return apiFetch<IBaseRes<IVendorRes>>(`/vendors/${vendorId}`, {
       method: 'DELETE',
     });
+  },
+
+  // Custom action
+  async exportVendors(params: IBaseReq = {} as IBaseReq) {
+    const query = buildQueryParams({ ... params});
+
+    const token = auth.getToken();
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/vendors/export?${query}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to export vendors');
+    }
+
+    return response.blob(); // For export
   },
 };

@@ -6,7 +6,7 @@ import Pagination from '@/@shared/components/Pagination';
 import Input from '@/@shared/components/Input';
 import { useDebounce } from '@/@shared/hooks/useDebounce';
 import { useCategories } from '@/@features/categories/categories.hook';
-import { useDeleteVendor, useVendors } from '@/@features/vendors/vendors.hook';
+import { useDeleteVendor, useExportVendors, useVendors } from '@/@features/vendors/vendors.hook';
 import DataTable from '@/@shared/components/Table';
 import { IVendorRes } from '@/@features/vendors/vendors.types';
 import Table from '@/@shared/components/Table';
@@ -46,11 +46,14 @@ export default function VendorsPage() {
   const canCreate = hasPermission(permissions, 'vendors.create');
   const canUpdate = hasPermission(permissions, 'vendors.update');
   const canDelete = hasPermission(permissions, 'vendors.delete');
+  const canExport = hasPermission(permissions, 'vendors.export');
 
   // Delete
   const [selectedVendor, setSelectedVendor] = useState<IVendorRes | null>(null);
   const deleteVendorMutation = useDeleteVendor();
 
+  // Export
+  const exportVendorsMutation = useExportVendors();
   const columns = [
     {
       key: 'nameAr',
@@ -163,6 +166,7 @@ export default function VendorsPage() {
             إدارة الموردين وبياناتهم
           </p>
         </div>
+        <div className='flex gap-3'>
 
         {canCreate && (
           <Button
@@ -171,6 +175,23 @@ export default function VendorsPage() {
             إضافة مورد
           </Button>
         )}
+        {canExport && (
+          <Button
+            type="button" color='green'
+            isLoading={exportVendorsMutation.isPending}
+            loadingText="جاري التصدير..."
+            onClick={() =>
+              exportVendorsMutation.mutate({
+                page, limit: 100,
+                key: debouncedSearch || undefined,
+                categoryId: categoryId || undefined,
+              })
+            }
+          >
+            تصدير Excel
+          </Button>
+        )}
+        </div>
       </div>
 
       <div className="mb-5 flex flex-col gap-3 md:flex-row">

@@ -73,3 +73,28 @@ export function useDeleteVendor() {
     },
   });
 }
+
+export function useExportVendors() {
+  return useMutation({
+    mutationFn: (params: IBaseReq) =>
+      vendorsService.exportVendors(params),
+
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = 'vendors.xlsx';
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success('تم تصدير الموردين بنجاح');
+    },
+  });
+}
