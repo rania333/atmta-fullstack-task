@@ -7,14 +7,17 @@ import Input from '@/@shared/components/Input';
 
 import { useDebounce } from '@/@shared/hooks/useDebounce';
 import { IUser } from '@/@features/users/users.types';
-import { useUsers } from '@/@features/users/useUsers.hook';
+import { useUpdateUserStatus, useUsers } from '@/@features/users/users.hook';
 import DataTable, { DataTableColumn } from '@/@shared/components/Table';
 import Pagination from '@/@shared/components/Pagination';
 import { useProfile } from '@/@core/profile/userProfile.hook';
 import { auth } from '@/@shared/libs/auth';
 import { hasPermission } from '@/@shared/libs/permission.helper';
+import ConfirmDialog from '@/@shared/components/ConfirmDialog';
+import { useRouter } from 'next/navigation';
 
 export default function UsersPage() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
@@ -35,6 +38,11 @@ export default function UsersPage() {
   const canCreate = hasPermission(permissions, 'users.create');
   const canUpdate = hasPermission(permissions, 'users.update');
   const canDelete = hasPermission(permissions, 'users.delete');
+
+  // For deactive
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const updateStatusMutation = useUpdateUserStatus();
+
 
   // Cols  
   const columns: DataTableColumn<IUser>[] = [
@@ -85,17 +93,19 @@ export default function UsersPage() {
     {
       key: 'actions',
       header: 'الإجراءات',
-      render: (_) => (
+      render: (user) => (
         <div className="flex items-center gap-2">
           {canUpdate && (
-            <Button size="sm" variant="soft" color="blue">
-               تعديل
+            <Button size="sm" variant="soft" color="blue"
+              onClick={() => router.push(`/users/${user.id}/edit`)}>
+              تعديل 
             </Button>
           )}
 
-          {canDelete && (
-            <Button size="sm" variant="soft" color="red">
-              تعطيل
+          {canUpdate && (
+            <Button size="sm" variant="soft" color= { user?.isActive ? 'red': 'green'} 
+              onClick={() => setSelectedUser(user)}>
+                { user?.isActive ? 'تعطيل ' : 'تفعيل '}
             </Button>
           )}
         </div>
@@ -105,60 +115,101 @@ export default function UsersPage() {
 
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            المستخدمون
-          </h1>
+    <>
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              المستخدمون
+            </h1>
 
-          <p className="mt-1 text-sm text-gray-500">
-            إدارة المستخدمين والأدوار الخاصة بهم
-          </p>
-        </div>
-
-        {canCreate && (
-          <Button>
-            إضافة مستخدم
-          </Button>
-        )}
-      </div>
-
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-200 p-4">
-          <div className="max-w-sm">
-            <Input
-              placeholder="البحث عن مستخدم..."
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setPage(1);
-              } } label={''}            />
+            <p className="mt-1 text-sm text-gray-500">
+              إدارة المستخدمين والأدوار الخاصة بهم
+            </p>
           </div>
+
+          {canCreate && (
+            <Button onClick={() => router.push('/users/create')}>
+              إضافة مستخدم
+            </Button>
+          )}
         </div>
 
-        <DataTable
-          data={users}
-          columns={columns}
-          getRowKey={(user) => user.id}
-          isLoading={isLoading}
-          emptyMessage="لا يوجد مستخدمون"
-        />
+        <div className="rounded-xl border border-gray-200 bg-white">
+          <div className="border-b border-gray-200 p-4">
+            <div className="max-w-sm">
+              <Input
+                placeholder="البحث عن مستخدم..."
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setPage(1);
+                } } label={''}            />
+            </div>
+          </div>
 
-        {meta && (
-          <Pagination
-            page={meta.page}
-            totalPages={meta.totalPages}
-            total={meta.total}
-            onPrevious={() =>
-              setPage((current) => current - 1)
-            }
-            onNext={() =>
-              setPage((current) => current + 1)
-            }
+          <DataTable
+            data={users}
+            columns={columns}
+            getRowKey={(user) => user.id}
+            isLoading={isLoading}
+            emptyMessage="لا يوجد مستخدمون"
           />
-        )}
+
+          {meta && (
+            <Pagination
+              page={meta.page}
+              totalPages={meta.totalPages}
+              total={meta.total}
+              onPrevious={() =>
+                setPage((current) => current - 1)
+              }
+              onNext={() =>
+                setPage((current) => current + 1)
+              }
+            />
+          )}
+        </div>
       </div>
-    </div>
+      <ConfirmDialog
+        isOpen={!!selectedUser}
+        confirmColor={selectedUser?.isActive ? 'red' : 'green'}
+        title={
+          selectedUser?.isActive
+            ? 'تعطيل المستخدم'
+            : 'تفعيل المستخدم'
+        }
+        message={
+          selectedUser
+            ? `هل أنتِ متأكدة من ${
+                selectedUser.isActive ? 'تعطيل' : 'تفعيل'
+              } المستخدم "${selectedUser.name}"؟`
+            : ''
+        }
+        confirmText={
+          selectedUser?.isActive ? 'تعطيل' : 'تفعيل'
+        }
+        isLoading={updateStatusMutation.isPending}
+        onCancel={() => setSelectedUser(null)}
+        onConfirm={() => {
+          if (!selectedUser) return;
+
+          updateStatusMutation.mutate(
+            {
+              userId: selectedUser.id,
+              isActive: !selectedUser.isActive,
+            },
+            {
+              onSuccess: () => {
+                setSelectedUser(null);
+              },
+            },
+          );
+        }}
+      />
+    </>
   );
+
+  
 }
+
