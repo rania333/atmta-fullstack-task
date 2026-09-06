@@ -193,9 +193,11 @@ export class VendorsService {
         if (mobile) vendor.mobile = this.normalizeSaudiMobile(mobile);
         vendor.updatedBy = user;
 
+        const updatedVendor = await this.vendorsRepo.save(vendor);
+
 
         return {
-            data: { ...vendor, createdBy: vendor?.createdBy?.name, updatedBy: vendor?.updatedBy?.name ?? '' },
+            data: { ...updatedVendor, createdBy: updatedVendor?.createdBy?.name, updatedBy: updatedVendor?.updatedBy?.name ?? '' },
             message: 'A Vendor is updated successfully',
             statusCode: 200
         }
@@ -214,13 +216,8 @@ export class VendorsService {
         if(!vendor) {
             throw new NotFoundException('Vendor not found');
         }
-
-        // 3. Check the user that updates vendor the one who's created it
-        if( vendor?.createdBy?.id != +userId ) {
-            throw new ForbiddenException('You are not allowed to modify this vendor');
-        }
-
-        // 4. Remove the vendor
+        
+        // 3. Remove the vendor
         await this.vendorsRepo.softRemove(vendor);
         return {
             data: null,

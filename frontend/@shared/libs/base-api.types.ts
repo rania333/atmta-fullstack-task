@@ -17,5 +17,6 @@ export interface IBaseReq {
     page: number,
     limit: number,
     key?: string,
-    parentCategoryId?: number
+    parentCategoryId?: number,
+    categoryId?: number
 }
