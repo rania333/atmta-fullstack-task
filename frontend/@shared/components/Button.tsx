@@ -23,9 +23,9 @@ const colors = {
     ghost: 'text-green-700 enabled:hover:bg-green-50',
   },
   gray: {
-    solid: 'bg-gray-700 text-white enabled:hover:bg-gray-800',
-    soft: 'bg-gray-100 text-gray-700 enabled:hover:bg-gray-200',
-    ghost: 'text-gray-700 enabled:hover:bg-gray-100',
+    solid: 'bg-gray-800 text-white enabled:hover:bg-gray-900',
+    soft: 'bg-gray-200 text-gray-800 enabled:hover:bg-gray-300',
+    ghost: 'text-gray-800 enabled:hover:bg-gray-200',
   },
 };
 

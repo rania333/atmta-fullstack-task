@@ -9,8 +9,8 @@ import MultiSelect from '@/@shared/components/MultiSelect';
 import { IDirectPermissionInput, IUserDetails } from '@/@features/users/users.types';
 import { useRoles } from '@/@features/roles/roles.hook';
 import { useUpdateDirectPermissions, useUpdateUser } from '@/@features/users/users.hook';
-import { usePermissions } from '../permissions.hook';
-import DirectPermissions from './DirectPermissions';
+import { usePermissions } from '../../permissions.hook';
+import DirectPermissions from '../DirectPermissions';
 
 interface UpdateUserFormProps {
   user: IUserDetails;

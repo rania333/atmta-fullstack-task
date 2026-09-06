@@ -15,3 +15,17 @@ export interface IRole {
   id: number;
   name: string;
 }
+
+export interface ICreateRoleReq {
+  name: string;
+  permissionIds: number[];
+}
+
+export interface IUpdateRoleVariables {
+  roleId: number;
+  data: IUpdateRoleReq;
+}
+export interface IUpdateRoleReq {
+  name: string;
+  permissionIds: number[];
+}

@@ -1,5 +1,5 @@
 'use client';
-import CreateUserForm from '@/@core/permissions/components/CreateUserForm';
+import CreateUserForm from '@/@core/permissions/components/User/CreateUserForm';
 
 export default function CreateUserPage() {
   return (

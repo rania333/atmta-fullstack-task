@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useUser } from '@/@features/users/users.hook';
-import UpdateUserForm from '@/@core/permissions/components/UpdateUserForm';
+import UpdateUserForm from '@/@core/permissions/components/User/UpdateUserForm';
 
 export default function EditUserPage() {
   const params = useParams();
