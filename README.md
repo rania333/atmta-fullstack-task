@@ -169,3 +169,18 @@ npm run build
 ```bash
 npm run start
 ``` 
+
+
+## Possible Improvements
+
+Given additional development time, the following improvements could further enhance the application:
+
+- Enhance the overall UI/UX and visual design.
+- Reuse a shared form component between Create and Edit screens where the form structure is identical.
+- Introduce additional higher-level reusable components to reduce repeated UI and form logic.
+- Add richer frontend validation with inline validation messages before requests are sent to the backend.
+- Add image upload support instead of relying only on image URLs.
+- Improve the role permissions UI by supporting "Select All" and bulk selection of actions within each module.
+- Introduce lightweight lookup endpoints for dropdown data such as categories instead of reusing paginated listing APIs.
+- Add more advanced filters, such as date ranges and additional status filters.
+- Add sorting support to data tables.
